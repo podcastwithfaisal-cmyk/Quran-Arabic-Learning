@@ -1,1 +1,191 @@
-const DATA=window.APP_DATA,KEY="quranArabicPOC2",allUnits=DATA.lessons.flatMap(l=>l.units),byId=Object.fromEntries(allUnits.map(u=>[u.id,u])),distractors=allUnits.map(u=>u.english);let state=load(),currentLesson=null,cardIndex=0,quizItems=[],quizIndex=0,currentAyah=null,answered=false;const screens={dashboard:dashboardScreen,lesson:lessonScreen,revision:revisionScreen,ayatList:ayatListScreen,ayat:ayatScreen};function blank(){return{mastered:[],completedLessons:[],revision:{},ayatAttempts:{}}}function load(){try{return{...blank(),...(JSON.parse(localStorage.getItem(KEY))||{})}}catch{return blank()}}function save(){localStorage.setItem(KEY,JSON.stringify(state));renderDashboard()}function show(n){Object.values(screens).forEach(s=>s.classList.remove("active"));screens[n].classList.add("active");scrollTo({top:0,behavior:"smooth"})}function shuffle(a){return[...a].sort(()=>Math.random()-.5)}function unlocked(){const k=new Set(state.mastered);return DATA.ayat.filter(a=>a.required.every(id=>k.has(id)))}function nextLesson(){return DATA.lessons.find(l=>!state.completedLessons.includes(l.id))||null}function renderDashboard(){headerKnown.textContent=state.mastered.length;statKnown.textContent=`${state.mastered.length} / ${allUnits.length}`;statLessons.textContent=`${state.completedLessons.length} / ${DATA.lessons.length}`;statAyat.textContent=unlocked().length;const nl=nextLesson();continueBtn.textContent=nl?`Start ${nl.title}`:"All lessons complete";continueBtn.disabled=!nl;revisionBtn.disabled=!state.mastered.length;ayatTestsBtn.disabled=!unlocked().length;lessonList.innerHTML="";DATA.lessons.forEach(l=>{const done=state.completedLessons.includes(l.id),r=document.createElement("div");r.className=`lesson-row ${done?"complete":""}`;r.innerHTML=`<div><strong>${l.title}</strong><div class="lesson-meta">${l.subtitle}</div></div><span class="lesson-tag">${done?"Complete":"Not started"}</span>`;lessonList.appendChild(r)});renderPreview()}function renderPreview(){surahPreview.innerHTML="";const s=[["وَيُنذِرَ","ndhr"],["ٱلَّذِينَ","alladhina"],["قَالُواْ","qwl"],["ٱتَّخَذَ","akh"],["ٱللَّهُ",null],["وَلَدًا","wld"],["مَّاكِثِينَ","mkth"],["فِيهِ","fi"],["أَبَدًا","abd"],["رَبَّنَا","rbb"],["ءَاتِنَا","aty"],["مِن","min"],["رَحْمَةً","rhm"],["ٱلْأَرْض","ard"],["عَبْد","abd2"],["شَيْء","shay"],["بَيْن","byn"]],k=new Set(state.mastered);s.forEach(([w,id])=>{const x=document.createElement("span");x.textContent=w;if(!id||k.has(id))x.classList.add("known");surahPreview.appendChild(x)})}function startLesson(l){currentLesson=l;cardIndex=0;lessonTitle.textContent=l.title;lessonSubtitle.textContent=l.subtitle;renderCard();show("lesson")}function renderCard(){const u=currentLesson.units[cardIndex];englishMeaning.textContent=u.english;arabicRoot.textContent=u.root;arabicForm.textContent=u.form;formMeaning.textContent=u.formMeaning;unitType.textContent=u.type;cardCounter.textContent=`${cardIndex+1} of 5`;backCardBtn.disabled=cardIndex===0;nextCardBtn.textContent=cardIndex===4?"Start Revision":"Next";flipCard.classList.remove("flipped")}function startRevision(items,lessonMode=false){quizItems=items;quizIndex=0;renderQuiz(lessonMode);show("revision")}function renderQuiz(lessonMode){answered=false;const u=quizItems[quizIndex];quizArabic.textContent=u.form;quizSub.textContent=u.root===u.form?u.type:`Root: ${u.root}`;quizCounter.textContent=`${quizIndex+1} of ${quizItems.length}`;quizFeedback.textContent="";const wrong=shuffle(distractors.filter(d=>d!==u.english)).slice(0,3),opts=shuffle([u.english,...wrong]);answerOptions.innerHTML="";opts.forEach(o=>{const b=document.createElement("button");b.className="answer-option";b.textContent=o;b.onclick=()=>answer(b,o,u,lessonMode);answerOptions.appendChild(b)})}function answer(btn,sel,u,lessonMode){if(answered)return;answered=true;const ok=sel===u.english,r=state.revision[u.id]||{correct:0,wrong:0,streak:0,last:null};if(ok){r.correct++;r.streak++}else{r.wrong++;r.streak=0}r.last=Date.now();state.revision[u.id]=r;document.querySelectorAll(".answer-option").forEach(b=>{b.disabled=true;if(b.textContent===u.english)b.classList.add("correct")});if(ok)quizFeedback.textContent="Correct.";else{btn.classList.add("wrong");quizFeedback.textContent=`Not quite. Correct answer: ${u.english}`}setTimeout(()=>{quizIndex++;if(quizIndex<quizItems.length)renderQuiz(lessonMode);else{if(lessonMode){currentLesson.units.forEach(x=>{if(!state.mastered.includes(x.id))state.mastered.push(x.id)});if(!state.completedLessons.includes(currentLesson.id))state.completedLessons.push(currentLesson.id)}save();show("dashboard")}},650)}function renderAyatList(){ayatList.innerHTML="";unlocked().forEach(a=>{const c=document.createElement("div");c.className="ayah-card";c.innerHTML=`<strong>Al-Kahf ${a.id}</strong><p class="ayah small" dir="rtl">${a.arabic}</p><button class="primary">Start Test</button>`;c.querySelector("button").onclick=()=>startAyat(a);ayatList.appendChild(c)})}function startAyat(a){currentAyah=a;ayatTitle.textContent=`Al-Kahf ${a.id}`;ayatArabic.textContent=a.arabic;translationInput.value="";ayatResult.classList.add("hidden");show("ayat")}function score(text,a){const t=text.toLowerCase(),sets={"18:4":[["warn"],["those"],["said","say"],["allah","god"],["take","taken","adopt"],["son","child"]],"18:3":[["remain","abide"],["therein","in it","there"],["forever","ever"]],"18:10":[["youth"],["cave"],["said"],["lord"],["grant","give"],["mercy"],["guidance"]]}[a.id]||[];let m=0;sets.forEach(g=>{if(g.some(w=>t.includes(w)))m++});return sets.length?Math.round(m/sets.length*100):0}continueBtn.onclick=()=>{const l=nextLesson();if(l)startLesson(l)};revisionBtn.onclick=()=>startRevision(shuffle(state.mastered.map(id=>byId[id])).slice(0,Math.min(10,state.mastered.length)),false);ayatTestsBtn.onclick=()=>{renderAyatList();show("ayatList")};flipCard.onclick=()=>flipCard.classList.toggle("flipped");backCardBtn.onclick=()=>{if(cardIndex>0){cardIndex--;renderCard()}};nextCardBtn.onclick=()=>{if(cardIndex<4){cardIndex++;renderCard()}else startRevision(currentLesson.units,true)};backDashboard1.onclick=()=>show("dashboard");backAyatList.onclick=()=>{renderAyatList();show("ayatList")};checkAyatBtn.onclick=()=>{const t=translationInput.value.trim();if(!t){ayatResult.className="ayat-result";ayatResult.textContent="Enter your understanding of the ayah first.";return}const s=score(t,currentAyah);let band="Below 60%",cls="score-orange";if(s>92){band="Green";cls="score-green"}else if(s>80){band="Yellow";cls="score-yellow"}else if(s>60){band="Orange";cls="score-orange"}state.ayatAttempts[currentAyah.id]={score:s,last:Date.now()};save();ayatResult.className="ayat-result";ayatResult.innerHTML=`<span class="score-badge ${cls}">${s}% · ${band}</span><p><strong>Reference meaning:</strong> ${currentAyah.reference}</p><p class="muted">POC2 still uses simple keyword matching. Controlled semantic grading comes later.</p>`};renderDashboard();
+const C=window.APP_CONFIG,D=window.APP_DATA;
+const sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_PUBLISHABLE_KEY);
+const allUnits=D.lessons.flatMap(l=>l.units),unitMap=Object.fromEntries(allUnits.map(u=>[u.id,u]));
+let session=null,state={mastered:new Set(),completed:new Set(),wordStats:{},ayatAttempts:[]};
+let authMode="signin",currentLesson=null,cardIndex=0,quizQueue=[],quizIndex=0,quizHistory=[],lessonRevision=false,currentAyah=null;
+
+const screens={auth:authScreen,dashboard:dashboardScreen,lesson:lessonScreen,revision:revisionScreen,ayatList:ayatListScreen,ayat:ayatScreen};
+function show(name){Object.values(screens).forEach(x=>x.classList.remove("active"));screens[name].classList.add("active");window.scrollTo({top:0})}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function unlockedAyat(){return D.ayat.filter(a=>a.required.every(id=>state.mastered.has(id)))}
+function nextLesson(){return D.lessons.find(l=>!state.completed.has(l.id))||null}
+
+async function init(){
+  if(C.SUPABASE_PUBLISHABLE_KEY.includes("PASTE_")){
+    show("auth");
+    authMessage.textContent="Add your Supabase publishable key to config.js before using this build.";
+    return;
+  }
+  const {data}=await sb.auth.getSession();
+  session=data.session;
+  if(session){await loadProgress();show("dashboard");renderDashboard()}else show("auth");
+}
+sb.auth.onAuthStateChange(async(_e,s)=>{session=s;if(s){await loadProgress();show("dashboard");renderDashboard()}else{show("auth");renderUser()}});
+
+function renderUser(){
+  userArea.innerHTML="";
+  if(!session)return;
+  const span=document.createElement("span");span.textContent=session.user.email;span.className="muted";
+  const b=document.createElement("button");b.textContent="Sign out";b.className="secondary";b.onclick=()=>sb.auth.signOut();
+  userArea.append(span,b);
+}
+
+async function loadProgress(){
+  state={mastered:new Set(),completed:new Set(),wordStats:{},ayatAttempts:[]};
+  const [{data:lessons},{data:words},{data:ayat}]=await Promise.all([
+    sb.from("lesson_progress").select("*"),
+    sb.from("word_progress").select("*"),
+    sb.from("ayat_attempts").select("*").order("attempted_at",{ascending:false})
+  ]);
+  (lessons||[]).filter(x=>x.completed).forEach(x=>state.completed.add(x.lesson_id));
+  (words||[]).forEach(x=>{state.wordStats[x.unit_id]=x;if(x.mastered)state.mastered.add(x.unit_id)});
+  state.ayatAttempts=ayat||[];
+  renderUser();
+}
+
+async function saveLessonComplete(lesson){
+  const uid=session.user.id;
+  await sb.from("lesson_progress").upsert({user_id:uid,lesson_id:lesson.id,completed:true,completed_at:new Date().toISOString()});
+  state.completed.add(lesson.id);
+  for(const u of lesson.units){
+    const s=state.wordStats[u.id]||{correct_count:0,wrong_count:0,streak:0};
+    const row={user_id:uid,unit_id:u.id,correct_count:s.correct_count||0,wrong_count:s.wrong_count||0,streak:s.streak||0,mastered:true,last_attempt_at:s.last_attempt_at||new Date().toISOString()};
+    await sb.from("word_progress").upsert(row);
+    state.wordStats[u.id]=row;
+    state.mastered.add(u.id);
+  }
+}
+
+async function recordWord(u,correct){
+  const cur=state.wordStats[u.id]||{correct_count:0,wrong_count:0,streak:0};
+  const next={
+    user_id:session.user.id,unit_id:u.id,
+    correct_count:(cur.correct_count||0)+(correct?1:0),
+    wrong_count:(cur.wrong_count||0)+(correct?0:1),
+    streak:correct?(cur.streak||0)+1:0,
+    mastered:state.mastered.has(u.id),
+    last_attempt_at:new Date().toISOString()
+  };
+  await sb.from("word_progress").upsert(next);
+  state.wordStats[u.id]=next;
+}
+
+function renderDashboard(){
+  statKnown.textContent=`${state.mastered.size} / ${allUnits.length}`;
+  statLessons.textContent=`${state.completed.size} / ${D.lessons.length}`;
+  statAyat.textContent=unlockedAyat().length;
+  const nl=nextLesson();continueBtn.textContent=nl?`Start ${nl.title}`:"All lessons complete";continueBtn.disabled=!nl;
+  revisionBtn.disabled=state.mastered.size===0;ayatTestsBtn.disabled=unlockedAyat().length===0;
+  lessonList.innerHTML="";
+  D.lessons.forEach(l=>{
+    const done=state.completed.has(l.id),locked=l.id>1&&!state.completed.has(l.id-1);
+    const r=document.createElement("div");r.className=`lesson-row ${done?"complete":""}`;
+    r.innerHTML=`<div><strong>${l.title}</strong><div class="muted">${l.subtitle}</div></div><div class="lesson-actions"></div>`;
+    const actions=r.querySelector(".lesson-actions");
+    if(done){
+      const redo=document.createElement("button");redo.className="secondary";redo.textContent="Redo";redo.onclick=()=>startLesson(l);
+      const rev=document.createElement("button");rev.className="secondary";rev.textContent="Revise";rev.onclick=()=>startRevision(l.units,false);
+      actions.append(redo,rev);
+    }else{
+      const b=document.createElement("button");b.className="primary";b.textContent=locked?"Locked":"Start";b.disabled=locked;b.onclick=()=>startLesson(l);actions.appendChild(b);
+    }
+    lessonList.appendChild(r);
+  });
+}
+
+function startLesson(l){currentLesson=l;cardIndex=0;lessonTitle.textContent=l.title;lessonSubtitle.textContent=l.subtitle;renderCard();show("lesson")}
+function renderCard(){
+  const u=currentLesson.units[cardIndex];
+  englishMeaning.textContent=u.english;arabicRoot.textContent=u.root;arabicForm.textContent=u.form;
+  formMeaning.textContent=u.formMeaning;unitType.textContent=u.type;cardCounter.textContent=`${cardIndex+1} of ${currentLesson.units.length}`;
+  backCardBtn.disabled=cardIndex===0;nextCardBtn.textContent=cardIndex===currentLesson.units.length-1?"Start Revision":"Next";flipCard.classList.remove("flipped");
+}
+
+function startRevision(items,isLesson=true){
+  lessonRevision=isLesson;quizQueue=shuffle([...items]);quizIndex=0;quizHistory=[];renderQuiz();show("revision")
+}
+function renderQuiz(){
+  const u=quizQueue[quizIndex],prev=quizHistory[quizIndex];
+  quizArabic.textContent=u.form;quizSub.textContent=u.root===u.form?u.type:`Root: ${u.root}`;
+  quizCounter.textContent=`${quizIndex+1} of ${quizQueue.length}`;quizFeedback.textContent="";
+  answerOptions.innerHTML="";
+  const options=shuffle([u.english,...shuffle(allUnits.filter(x=>x.id!==u.id).map(x=>x.english)).slice(0,3)]);
+  options.forEach(o=>{
+    const b=document.createElement("button");b.className="answer-option";b.textContent=o;
+    if(prev){b.disabled=true;if(o===u.english)b.classList.add("correct");if(o===prev.answer&&o!==u.english)b.classList.add("wrong")}
+    else b.onclick=()=>answerRevision(b,o,u);
+    answerOptions.appendChild(b);
+  });
+  if(prev)quizFeedback.textContent=prev.correct?"Correct.":`Incorrect. Correct answer: ${u.english}`;
+  revisionBackBtn.disabled=quizIndex===0;
+  revisionNextBtn.disabled=!prev;
+  revisionNextBtn.textContent=quizIndex===quizQueue.length-1?"Finish / retry missed":"Next";
+}
+
+async function answerRevision(btn,answer,u){
+  const correct=answer===u.english;
+  await recordWord(u,correct);
+  quizHistory[quizIndex]={answer,correct};
+  document.querySelectorAll(".answer-option").forEach(b=>{b.disabled=true;if(b.textContent===u.english)b.classList.add("correct")});
+  if(!correct)btn.classList.add("wrong");
+  quizFeedback.textContent=correct?"Correct.":`Incorrect. Correct answer: ${u.english}`;
+  revisionNextBtn.disabled=false;
+}
+
+async function nextRevision(){
+  if(quizIndex<quizQueue.length-1){quizIndex++;renderQuiz();return}
+  const missed=quizHistory.map((h,i)=>h&&!h.correct?quizQueue[i]:null).filter(Boolean);
+  if(missed.length){
+    quizQueue=shuffle(missed);quizIndex=0;quizHistory=[];renderQuiz();return;
+  }
+  if(lessonRevision&&currentLesson){await saveLessonComplete(currentLesson)}
+  await loadProgress();renderDashboard();show("dashboard");
+}
+
+function renderAyatList(){
+  ayatList.innerHTML="";
+  unlockedAyat().forEach(a=>{
+    const c=document.createElement("div");c.className="ayah-card";
+    c.innerHTML=`<strong>Al-Kahf ${a.id}</strong><p class="ayah" dir="rtl">${a.arabic}</p><button class="primary">Start Test</button>`;
+    c.querySelector("button").onclick=()=>startAyat(a);ayatList.appendChild(c);
+  });
+}
+function startAyat(a){currentAyah=a;ayatTitle.textContent=`Al-Kahf ${a.id}`;ayatArabic.textContent=a.arabic;translationInput.value="";ayatResult.classList.add("hidden");show("ayat")}
+function scoreText(t,a){
+  const x=t.toLowerCase(),sets={"18:4":[["warn"],["those"],["said","say"],["allah","god"],["take","taken","adopt"],["son","child"]],"18:3":[["remain","abide"],["therein","in it","there"],["forever","ever"]]}[a.id]||[];
+  let m=0;sets.forEach(g=>{if(g.some(w=>x.includes(w)))m++});return sets.length?Math.round(m/sets.length*100):0;
+}
+
+showSignIn.onclick=()=>{authMode="signin";authSubmit.textContent="Sign in";showSignIn.classList.add("active-tab");showSignUp.classList.remove("active-tab");authMessage.textContent=""}
+showSignUp.onclick=()=>{authMode="signup";authSubmit.textContent="Create account";showSignUp.classList.add("active-tab");showSignIn.classList.remove("active-tab");authMessage.textContent=""}
+authForm.onsubmit=async e=>{
+  e.preventDefault();authMessage.textContent="";
+  const email=emailInput.value.trim(),password=passwordInput.value;
+  if(authMode==="signup"){
+    const {error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:"https://quran-arabic-learning.pages.dev"}});
+    authMessage.textContent=error?error.message:"Account created. Check your email to confirm your address.";
+  }else{
+    const {error}=await sb.auth.signInWithPassword({email,password});
+    authMessage.textContent=error?error.message:"";
+  }
+};
+
+continueBtn.onclick=()=>{const l=nextLesson();if(l)startLesson(l)};
+revisionBtn.onclick=()=>startRevision(shuffle([...state.mastered].map(id=>unitMap[id])).slice(0,10),false);
+ayatTestsBtn.onclick=()=>{renderAyatList();show("ayatList")};
+flipCard.onclick=()=>flipCard.classList.toggle("flipped");
+backCardBtn.onclick=()=>{if(cardIndex>0){cardIndex--;renderCard()}};
+nextCardBtn.onclick=()=>{if(cardIndex<currentLesson.units.length-1){cardIndex++;renderCard()}else startRevision(currentLesson.units,true)};
+revisionBackBtn.onclick=()=>{if(quizIndex>0){quizIndex--;renderQuiz()}};
+revisionNextBtn.onclick=nextRevision;
+backDashboard.onclick=()=>show("dashboard");
+backAyatList.onclick=()=>{renderAyatList();show("ayatList")};
+checkAyatBtn.onclick=async()=>{
+  const t=translationInput.value.trim();if(!t)return;
+  const s=scoreText(t,currentAyah);
+  await sb.from("ayat_attempts").insert({user_id:session.user.id,ayah_id:currentAyah.id,score:s});
+  let band="Below 60%",cls="score-orange";if(s>92){band="Green";cls="score-green"}else if(s>80){band="Yellow";cls="score-yellow"}else if(s>60){band="Orange";cls="score-orange"}
+  ayatResult.className="ayat-result";ayatResult.innerHTML=`<span class="score-badge ${cls}">${s}% · ${band}</span><p><strong>Reference meaning:</strong> ${currentAyah.reference}</p><p class="muted">Semantic AI grading will replace this simple keyword score later.</p>`;
+};
+
+init();

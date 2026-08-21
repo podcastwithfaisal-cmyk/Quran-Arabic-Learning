@@ -1,17 +1,48 @@
-# Quran Arabic Learning — POC2
+# Quran Arabic Learning — Multi-user build
 
-Included:
-- 5 lessons / 25 learning units
-- Saved browser progress
-- Revision performance tracking
-- Dynamically unlocked Ayat Tests
-- Basic visual Al-Kahf recognition view
-- Lesson data separated into data.js
+This version adds:
+- Supabase email/password sign-up and sign-in
+- Per-user lesson progress
+- Per-user word correct/wrong/streak data
+- Per-user Ayat Test history
+- Sign out
+- Retry incorrect revision questions before finishing
+- Back navigation during revision
+- Redo completed lessons
+- Revise completed lessons
+- Sequential lesson locking
+- Harakat on Quranic word forms
 
-To deploy, replace the root files in the GitHub repo with these five files. Cloudflare Pages should then redeploy automatically.
+## Before uploading
 
-Current limitations:
-- Ayat scoring is keyword-based
-- Curriculum remains provisional
-- Surah progress view is representative, not the complete chapter
-- Full spaced repetition scheduling is not yet implemented
+Open `config.js` and replace:
+
+`PASTE_YOUR_PUBLISHABLE_KEY_HERE`
+
+with the Supabase Publishable key from:
+Project Settings → API Keys → Publishable key.
+
+The Project URL is already configured.
+
+Do NOT use the Supabase secret key.
+
+## Upload to GitHub
+
+Replace/add these files in the root of the `Quran-Arabic-Learning` repo:
+
+- index.html
+- style.css
+- config.js
+- data.js
+- app.js
+- README.md
+
+Cloudflare Pages should redeploy automatically.
+
+## Database assumptions
+
+The build expects these Supabase tables and RLS policies to already exist:
+
+- lesson_progress
+- word_progress
+- ayat_attempts
