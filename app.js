@@ -203,9 +203,114 @@ function renderAyatList(){
   });
 }
 function startAyat(a){currentAyah=a;ayatTitle.textContent=`Al-Kahf ${a.id}`;ayatArabic.textContent=a.arabic;translationInput.value="";ayatResult.classList.add("hidden");show("ayat")}
-function scoreText(t,a){
-  const x=t.toLowerCase(),sets={"18:4":[["warn"],["those"],["said","say"],["allah","god"],["take","taken","adopt"],["son","child"]],"18:3":[["remain","abide"],["therein","in it","there"],["forever","ever"]]}[a.id]||[];
-  let m=0;sets.forEach(g=>{if(g.some(w=>x.includes(w)))m++});return sets.length?Math.round(m/sets.length*100):0;
+function normaliseAnswer(text){
+  return text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s']/gu," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function phraseMatched(text, alternatives){
+  return alternatives.some(phrase=>text.includes(phrase));
+}
+
+function scoreText(text,ayah){
+  const t=normaliseAnswer(text);
+
+  const rubrics={
+    "18:4":[
+      {label:"warn",alts:["warn","warning"]},
+      {label:"those who",alts:["those who","those"]},
+      {label:"said",alts:["said","say","saying"]},
+      {label:"Allah",alts:["allah","god"]},
+      {label:"has taken / adopted",alts:["has taken","taken","take","adopted","adopt"]},
+      {label:"a son / child",alts:["son","child","offspring"]}
+    ],
+    "18:3":[
+      {label:"remaining / abiding",alts:["remain","remaining","abide","abiding","stay","staying"]},
+      {label:"therein / in it",alts:["therein","in it","there"]},
+      {label:"forever",alts:["forever","ever","eternally"]}
+    ],
+    "18:23":[
+      {label:"do not say",alts:["do not say","don't say","never say","must not say"]},
+      {label:"about anything",alts:["anything","something","a thing"]},
+      {label:"I will do that",alts:["i will do that","i'll do that","i will do it","i shall do that"]},
+      {label:"tomorrow",alts:["tomorrow"]}
+    ],
+    "18:24":[
+      {label:"except / unless",alts:["except","unless"]},
+      {label:"if Allah wills",alts:["if allah wills","allah wills","god wills","if god wills"]},
+      {label:"remember your Lord",alts:["remember your lord","remember lord","remember god"]},
+      {label:"when you forget",alts:["when you forget","if you forget","when forget"]},
+      {label:"say",alts:["say","and say","then say"]},
+      {label:"perhaps my Lord",alts:["perhaps my lord","maybe my lord","may my lord","perhaps god"]},
+      {label:"will guide me",alts:["will guide me","guide me","may guide me"]},
+      {label:"nearer / closer than this",alts:["nearer than this","closer than this","nearer","closer"]},
+      {label:"right guidance / right conduct",alts:["right guidance","right conduct","right course","guidance","righteous","right way"]}
+    ],
+    "18:61":[
+      {label:"when they reached",alts:["when they reached","they reached"]},
+      {label:"the junction / meeting place",alts:["junction","meeting place","meeting point"]},
+      {label:"they forgot",alts:["they forgot","forgot"]},
+      {label:"their fish",alts:["their fish","the fish"]},
+      {label:"it took its way",alts:["took its way","made its way","went its way","took a path"]},
+      {label:"into the sea",alts:["into the sea","in the sea","sea"]},
+      {label:"slipping / tunnelling away",alts:["slipping away","tunnel","tunnelling","tunneling","slipped away"]}
+    ],
+    "18:10":[
+      {label:"the youths",alts:["youths","young men","young people"]},
+      {label:"sought refuge / retreated",alts:["sought refuge","took refuge","retreated","withdrew"]},
+      {label:"the cave",alts:["cave"]},
+      {label:"our Lord",alts:["our lord","lord"]},
+      {label:"grant us mercy",alts:["grant us mercy","give us mercy","mercy"]},
+      {label:"from Yourself",alts:["from yourself","from you"]},
+      {label:"prepare / facilitate",alts:["prepare","facilitate","make easy"]},
+      {label:"our affair",alts:["our affair","our matter"]},
+      {label:"right guidance",alts:["right guidance","right conduct","right course","guidance"]}
+    ],
+    "18:69":[
+      {label:"he said",alts:["he said","said"]},
+      {label:"you will find me",alts:["you will find me","find me"]},
+      {label:"if Allah wills",alts:["if allah wills","allah wills","god willing","if god wills"]},
+      {label:"patient",alts:["patient","patience"]},
+      {label:"I will not disobey you",alts:["not disobey you","will not disobey","won't disobey","do not disobey"]},
+      {label:"in any command / matter",alts:["command","matter","instruction"]}
+    ],
+    "18:109":[
+      {label:"say",alts:["say","tell"]},
+      {label:"if the sea were ink",alts:["sea were ink","sea was ink","sea as ink"]},
+      {label:"for the words of my Lord",alts:["words of my lord","words of the lord","lord's words"]},
+      {label:"the sea would run out",alts:["sea would run out","sea ran out","sea be exhausted","sea exhausted"]},
+      {label:"before the words run out",alts:["before the words","before his words","before the words run out","before the words are exhausted"]},
+      {label:"even if We brought",alts:["even if we brought","if we brought","even were we to bring"]},
+      {label:"the like of it / its equal",alts:["like of it","its equal","similar amount","another like it"]},
+      {label:"additional supply",alts:["additional supply","more supply","reinforcement","extra"]}
+    ]
+  };
+
+  const concepts=rubrics[ayah.id]||[];
+  if(!concepts.length) return {score:0,matched:[],missing:[]};
+
+  const matched=[],missing=[];
+  concepts.forEach(c=>{
+    if(phraseMatched(t,c.alts)) matched.push(c.label);
+    else missing.push(c.label);
+  });
+
+  const score=Math.round((matched.length/concepts.length)*100);
+  return {score,matched,missing};
+}
+
+function feedbackText(result){
+  const parts=[];
+  if(result.matched.length){
+    parts.push(`<p><strong>You captured:</strong> ${result.matched.join(", ")}.</p>`);
+  }
+  if(result.missing.length){
+    parts.push(`<p><strong>Review:</strong> ${result.missing.join(", ")}.</p>`);
+  }
+  return parts.join("");
 }
 
 showSignIn.onclick=()=>{authMode="signin";authSubmit.textContent="Sign in";showSignIn.classList.add("active-tab");showSignUp.classList.remove("active-tab");authMessage.textContent=""}
@@ -233,11 +338,34 @@ revisionNextBtn.onclick=nextRevision;
 backDashboard.onclick=()=>show("dashboard");
 backAyatList.onclick=()=>{renderAyatList();show("ayatList")};
 checkAyatBtn.onclick=async()=>{
-  const t=translationInput.value.trim();if(!t)return;
-  const s=scoreText(t,currentAyah);
-  await sb.from("ayat_attempts").insert({user_id:session.user.id,ayah_id:currentAyah.id,score:s});
-  let band="Below 60%",cls="score-orange";if(s>92){band="Green";cls="score-green"}else if(s>80){band="Yellow";cls="score-yellow"}else if(s>60){band="Orange";cls="score-orange"}
-  ayatResult.className="ayat-result";ayatResult.innerHTML=`<span class="score-badge ${cls}">${s}% · ${band}</span><p><strong>Reference meaning:</strong> ${currentAyah.reference}</p><p class="muted">Semantic AI grading will replace this simple keyword score later.</p>`;
+  const t=translationInput.value.trim();
+  if(!t){
+    ayatResult.className="ayat-result";
+    ayatResult.textContent="Enter your understanding of the ayah first.";
+    return;
+  }
+
+  const result=scoreText(t,currentAyah);
+  const s=result.score;
+
+  await sb.from("ayat_attempts").insert({
+    user_id:session.user.id,
+    ayah_id:currentAyah.id,
+    score:s
+  });
+
+  let band="Below 60%",cls="score-orange";
+  if(s>92){band="Green";cls="score-green"}
+  else if(s>80){band="Yellow";cls="score-yellow"}
+  else if(s>60){band="Orange";cls="score-orange"}
+
+  ayatResult.className="ayat-result";
+  ayatResult.innerHTML=`
+    <span class="score-badge ${cls}">${s}% · ${band}</span>
+    ${feedbackText(result)}
+    <p><strong>Reference meaning:</strong> ${currentAyah.reference}</p>
+    <p class="muted">This POC now scores key meaning concepts and common English equivalents rather than requiring exact wording. A later version can use semantic AI grading.</p>
+  `;
 };
 
 init();
