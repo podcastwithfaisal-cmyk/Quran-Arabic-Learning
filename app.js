@@ -145,6 +145,28 @@ function renderDashboard(){
   }
 }
 
+function addDashboardExit(){
+  const existing=document.getElementById("lessonDashboardExit");
+  if(existing) existing.remove();
+
+  const activeView=[lessonView,revisionView].find(v=>v&&!v.classList.contains("hidden"));
+  if(!activeView) return;
+
+  const exit=document.createElement("button");
+  exit.id="lessonDashboardExit";
+  exit.className="secondary";
+  exit.textContent="← Back to Dashboard";
+  exit.style.marginBottom="12px";
+  exit.onclick=()=>{
+    showView(dashboardView);
+    renderDashboard();
+  };
+
+  const heading=activeView.querySelector(".section-heading");
+  if(heading) heading.insertAdjacentElement("afterend",exit);
+  else activeView.prepend(exit);
+}
+
 function startLesson(l){currentLesson=l;cardIndex=0;lessonTitle.textContent=l.title;lessonSubtitle.textContent=l.subtitle;renderCard();show("lesson")}
 function renderCard(){
   const u=currentLesson.units[cardIndex];
