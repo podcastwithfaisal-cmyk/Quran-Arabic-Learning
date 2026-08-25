@@ -60,7 +60,38 @@ window.APP_DATA = {
       {id:"jia",english:"we came / brought",root:"ج ي أ",form:"جِئْنَا",formMeaning:"We came / brought",type:"Root family + Quranic form"},
       {id:"mdd",english:"supply / extension",root:"م د د",form:"مِدَادًا / مَدَدًا",formMeaning:"ink / additional supply",type:"Related forms from one root family"},
       {id:"an",english:"that / to",root:"أَنْ",form:"أَنْ",formMeaning:"that / to",type:"Particle"},
-      {id:"bi",english:"with / by",root:"بِـ",form:"بِمِثْلِهِۦ",formMeaning:"with / by",type:"Preposition prefix"}]}
+      {id:"bi",english:"with / by",root:"بِـ",form:"بِمِثْلِهِۦ",formMeaning:"with / by",type:"Preposition prefix"}]},
+
+    {id:11,title:"Lesson 11",subtitle:"Complete Al-Kahf 18:10",units:[
+      {id:"ladunka_future",english:"from Yourself / from You",root:"ل د ن",form:"لَّدُنكَ",formMeaning:"from Yourself / from You",type:"Noun + attached pronoun"},
+      {id:"hayyi_future",english:"prepare / facilitate",root:"ه ي أ",form:"وَهَيِّئْ",formMeaning:"and prepare / facilitate",type:"Root family + imperative form"},
+      {id:"wa",english:"and",root:"وَ",form:"وَ",formMeaning:"and",type:"Conjunction prefix"},
+      {id:"ka_suffix",english:"your / you",root:"ـكَ",form:"لَّدُنكَ",formMeaning:"your / you",type:"Attached pronoun"},
+      {id:"imperative",english:"command form: do!",root:"فِعْلُ أَمْر",form:"هَيِّئْ / قُلْ / ءَاتِنَا",formMeaning:"prepare! / say! / grant us!",type:"Grammar pattern"}]},
+    {id:12,title:"Lesson 12",subtitle:"Complete Al-Kahf 18:69",units:[
+      {id:"satajiduni_future",english:"you will find me",root:"و ج د",form:"سَتَجِدُنِي",formMeaning:"you will find me",type:"Root + future form + pronoun"},
+      {id:"asi_future",english:"I disobey",root:"ع ص ي",form:"أَعْصِي",formMeaning:"I disobey",type:"Root family + Quranic form"},
+      {id:"wjd",english:"find",root:"و ج د",form:"وَجَدَ",formMeaning:"he found",type:"Root family"},
+      {id:"sa_future",english:"will / future marker",root:"سَـ",form:"سَتَجِدُنِي",formMeaning:"you will find me",type:"Future prefix"},
+      {id:"ni_suffix",english:"me",root:"ـنِي",form:"سَتَجِدُنِي",formMeaning:"me",type:"Attached object pronoun"}]},
+    {id:13,title:"Lesson 13",subtitle:"Complete and consolidate Al-Kahf 18:109",units:[
+      {id:"my_suffix_future",english:"my",root:"ـي",form:"رَبِّي",formMeaning:"my Lord",type:"Attached possessive pronoun"},
+      {id:"li",english:"for / belonging to",root:"لِـ",form:"لِّكَلِمَاتِ",formMeaning:"for the words",type:"Preposition prefix"},
+      {id:"midada",english:"ink",root:"م د د",form:"مِدَادًا",formMeaning:"ink",type:"Root family + Quranic form"},
+      {id:"lanafida",english:"surely would run out",root:"ن ف د",form:"لَنَفِدَ",formMeaning:"surely would be exhausted",type:"Known root in contextual form"},
+      {id:"walaw",english:"and even if",root:"وَ + لَوْ",form:"وَلَوْ",formMeaning:"and even if",type:"Conjunction + conditional particle"}]},
+    {id:14,title:"Lesson 14",subtitle:"Al-Kahf narrative vocabulary",units:[
+      {id:"dhkr",english:"remember / mention",root:"ذ ك ر",form:"ذَكَرَ",formMeaning:"he remembered / mentioned",type:"Root family + Quranic form"},
+      {id:"haqq",english:"truth / true",root:"ح ق ق",form:"ٱلْحَقُّ",formMeaning:"the truth",type:"Root family + Quranic form"},
+      {id:"sma",english:"hear",root:"س م ع",form:"سَمِعَ",formMeaning:"he heard",type:"Root family + Quranic form"},
+      {id:"bsr",english:"see / sight",root:"ب ص ر",form:"أَبْصِرْ",formMeaning:"see / how clearly He sees",type:"Root family + Quranic form"},
+      {id:"hkm",english:"judge / judgement",root:"ح ك م",form:"حُكْمِهِۦ",formMeaning:"His judgement",type:"Root family + attached pronoun"}]},
+    {id:15,title:"Lesson 15",subtitle:"High-value Quran vocabulary in Al-Kahf",units:[
+      {id:"hyh",english:"life",root:"ح ي ي",form:"ٱلْحَيَوٰةِ",formMeaning:"the life",type:"Root family + Quranic form"},
+      {id:"dnya",english:"world / worldly life",root:"د ن و",form:"ٱلدُّنْيَا",formMeaning:"the worldly life",type:"Quranic noun"},
+      {id:"mal",english:"wealth / property",root:"م و ل",form:"ٱلْمَالُ",formMeaning:"wealth",type:"Root family + Quranic form"},
+      {id:"bny",english:"sons / children",root:"ب ن ي",form:"ٱلْبَنُونَ",formMeaning:"sons / children",type:"Root family + Quranic form"},
+      {id:"khyr",english:"good / better",root:"خ ي ر",form:"خَيْرٌ",formMeaning:"better / good",type:"Root family + Quranic form"}]}
   ],
 
   ayat: [
@@ -79,6 +110,6 @@ window.APP_DATA = {
 
     {id:"18:109",arabic:"قُل لَّوْ كَانَ ٱلْبَحْرُ مِدَادًا لِّكَلِمَاتِ رَبِّي لَنَفِدَ ٱلْبَحْرُ قَبْلَ أَن تَنفَدَ كَلِمَاتُ رَبِّي وَلَوْ جِئْنَا بِمِثْلِهِۦ مَدَدًا",
      reference:"Say, “If the sea were ink for the Words of my Lord, the sea would run out before the Words of my Lord were exhausted, even if We brought the like of it as additional supply.”",
-     required:["qwl_qul","law","kwn_kana","bhr","mdd","lam","klm","rbb","nfd","qbl","an","jia","bi","mthl","my_suffix_future"]}
+     required:["qwl_qul","law","kwn_kana","bhr","midada","li","klm","rbb","nfd","qbl","an","jia","bi","mthl","my_suffix_future"]}
   ]
 };
