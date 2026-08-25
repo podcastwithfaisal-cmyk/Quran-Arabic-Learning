@@ -194,12 +194,46 @@ async function nextRevision(){
   await loadProgress();renderDashboard();show("dashboard");
 }
 
+function getAyatProgress(ayahId){
+  const attempts=state.ayatAttempts.filter(x=>x.ayah_id===ayahId);
+  if(!attempts.length){
+    return {attempted:false,passed:false,bestScore:null,attemptCount:0};
+  }
+
+  const bestScore=Math.max(...attempts.map(x=>Number(x.score)||0));
+
+  return {
+    attempted:true,
+    passed:bestScore>=60,
+    bestScore,
+    attemptCount:attempts.length
+  };
+}
+
 function renderAyatList(){
   ayatList.innerHTML="";
+
   unlockedAyat().forEach(a=>{
-    const c=document.createElement("div");c.className="ayah-card";
-    c.innerHTML=`<strong>Al-Kahf ${a.id}</strong><p class="ayah" dir="rtl">${a.arabic}</p><button class="primary">Start Test</button>`;
-    c.querySelector("button").onclick=()=>startAyat(a);ayatList.appendChild(c);
+    const progress=getAyatProgress(a.id);
+    const c=document.createElement("div");
+    c.className="ayah-card";
+
+    let status="";
+    if(progress.passed){
+      status=`<p><strong>✓ Passed</strong> · Best score ${progress.bestScore}%</p>`;
+    }else if(progress.attempted){
+      status=`<p><strong>Not passed yet</strong> · Best score ${progress.bestScore}%</p>`;
+    }
+
+    c.innerHTML=`
+      <strong>Al-Kahf ${a.id}</strong>
+      ${status}
+      <p class="ayah" dir="rtl">${a.arabic}</p>
+      <button class="primary">${progress.attempted?"Redo Test":"Start Test"}</button>
+    `;
+
+    c.querySelector("button").onclick=()=>startAyat(a);
+    ayatList.appendChild(c);
   });
 }
 function startAyat(a){currentAyah=a;ayatTitle.textContent=`Al-Kahf ${a.id}`;ayatArabic.textContent=a.arabic;translationInput.value="";ayatResult.classList.add("hidden");show("ayat")}
@@ -348,23 +382,46 @@ checkAyatBtn.onclick=async()=>{
   const result=scoreText(t,currentAyah);
   const s=result.score;
 
-  await sb.from("ayat_attempts").insert({
-    user_id:session.user.id,
-    ayah_id:currentAyah.id,
-    score:s
-  });
+  const attemptedAt=new Date().toISOString();
+
+  const {data:savedAttempt,error:saveError}=await sb
+    .from("ayat_attempts")
+    .insert({
+      user_id:session.user.id,
+      ayah_id:currentAyah.id,
+      score:s,
+      attempted_at:attemptedAt
+    })
+    .select()
+    .single();
+
+  if(!saveError){
+    state.ayatAttempts.unshift(
+      savedAttempt || {
+        user_id:session.user.id,
+        ayah_id:currentAyah.id,
+        score:s,
+        attempted_at:attemptedAt
+      }
+    );
+  }
 
   let band="Below 60%",cls="score-orange";
   if(s>92){band="Green";cls="score-green"}
   else if(s>80){band="Yellow";cls="score-yellow"}
   else if(s>60){band="Orange";cls="score-orange"}
 
+  const passMessage=s>=60
+    ? `<p><strong>✓ Ayah passed.</strong> This result is saved to your account.</p>`
+    : `<p><strong>Not passed yet.</strong> Score 60% or higher to mark this ayah as passed.</p>`;
+
   ayatResult.className="ayat-result";
   ayatResult.innerHTML=`
     <span class="score-badge ${cls}">${s}% · ${band}</span>
+    ${passMessage}
     ${feedbackText(result)}
     <p><strong>Reference meaning:</strong> ${currentAyah.reference}</p>
-    <p class="muted">This POC now scores key meaning concepts and common English equivalents rather than requiring exact wording. A later version can use semantic AI grading.</p>
+    <p class="muted">Your attempt is saved. The app remembers your best score, and a later lower score will not remove a previous pass.</p>
   `;
 };
 
