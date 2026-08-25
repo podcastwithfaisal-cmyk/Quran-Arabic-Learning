@@ -210,6 +210,54 @@ function getAyatProgress(ayahId){
   };
 }
 
+function relatedLessonsForAyah(ayah){
+  const required=new Set(ayah.required||[]);
+  return D.lessons.filter(lesson=>lesson.units.some(unit=>required.has(unit.id)));
+}
+
+function showRelatedLessons(ayah){
+  const lessons=relatedLessonsForAyah(ayah);
+
+  ayatList.innerHTML="";
+
+  const header=document.createElement("div");
+  header.className="ayah-card";
+  header.innerHTML=`
+    <strong>Al-Kahf ${ayah.id}</strong>
+    <p class="muted">Review the lessons that taught vocabulary or grammar used in this ayah.</p>
+    <button class="secondary back-to-ayat">← Back to Ayat Tests</button>
+  `;
+  header.querySelector(".back-to-ayat").onclick=renderAyatList;
+  ayatList.appendChild(header);
+
+  lessons.forEach(lesson=>{
+    const row=document.createElement("div");
+    row.className="lesson-row";
+    row.innerHTML=`
+      <div>
+        <strong>${lesson.title}</strong>
+        <div class="muted">${lesson.subtitle}</div>
+      </div>
+      <div class="lesson-actions"></div>
+    `;
+
+    const actions=row.querySelector(".lesson-actions");
+
+    const revise=document.createElement("button");
+    revise.className="secondary";
+    revise.textContent="Revise";
+    revise.onclick=()=>startRevision(lesson.units,false);
+
+    const redo=document.createElement("button");
+    redo.className="secondary";
+    redo.textContent="Redo";
+    redo.onclick=()=>startLesson(lesson);
+
+    actions.append(revise,redo);
+    ayatList.appendChild(row);
+  });
+}
+
 function renderAyatList(){
   ayatList.innerHTML="";
 
@@ -229,10 +277,14 @@ function renderAyatList(){
       <strong>Al-Kahf ${a.id}</strong>
       ${status}
       <p class="ayah" dir="rtl">${a.arabic}</p>
-      <button class="primary">${progress.attempted?"Redo Test":"Start Test"}</button>
+      <div class="ayat-actions">
+        <button class="primary test-button">${progress.attempted?"Redo Test":"Start Test"}</button>
+        <button class="secondary review-button">Review Related Lessons</button>
+      </div>
     `;
 
-    c.querySelector("button").onclick=()=>startAyat(a);
+    c.querySelector(".test-button").onclick=()=>startAyat(a);
+    c.querySelector(".review-button").onclick=()=>showRelatedLessons(a);
     ayatList.appendChild(c);
   });
 }
