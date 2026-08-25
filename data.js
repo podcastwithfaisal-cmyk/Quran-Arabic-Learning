@@ -91,7 +91,42 @@ window.APP_DATA = {
       {id:"dnya",english:"world / worldly life",root:"د ن و",form:"ٱلدُّنْيَا",formMeaning:"the worldly life",type:"Quranic noun"},
       {id:"mal",english:"wealth / property",root:"م و ل",form:"ٱلْمَالُ",formMeaning:"wealth",type:"Root family + Quranic form"},
       {id:"bny",english:"sons / children",root:"ب ن ي",form:"ٱلْبَنُونَ",formMeaning:"sons / children",type:"Root family + Quranic form"},
-      {id:"khyr",english:"good / better",root:"خ ي ر",form:"خَيْرٌ",formMeaning:"better / good",type:"Root family + Quranic form"}]}
+      {id:"khyr",english:"good / better",root:"خ ي ر",form:"خَيْرٌ",formMeaning:"better / good",type:"Root family + Quranic form"}]},
+
+    {id:16,title:"Lesson 16",subtitle:"Unlock Al-Kahf 18:23",units:[
+      {id:"taqulanna",english:"you must not say",root:"ق و ل",form:"تَقُولَنَّ",formMeaning:"you must / certainly say",type:"Known root → emphatic imperfect form"},
+      {id:"inni",english:"indeed I",root:"إِنَّ + ـي",form:"إِنِّي",formMeaning:"indeed I",type:"Particle + attached pronoun"},
+      {id:"fail",english:"doing / one who does",root:"ف ع ل",form:"فَاعِلٌ",formMeaning:"doing / one who does",type:"Root family + active participle"},
+      {id:"dhalika",english:"that",root:"ذَٰلِكَ",form:"ذَٰلِكَ",formMeaning:"that",type:"Demonstrative pronoun"},
+      {id:"ghadan",english:"tomorrow",root:"غ د و",form:"غَدًا",formMeaning:"tomorrow",type:"Quranic noun / time expression"}]},
+
+    {id:17,title:"Lesson 17",subtitle:"Build towards Al-Kahf 18:24",units:[
+      {id:"illa",english:"except / unless",root:"إِلَّا",form:"إِلَّا",formMeaning:"except / unless",type:"Restriction particle"},
+      {id:"idha",english:"when",root:"إِذَا",form:"إِذَا",formMeaning:"when",type:"Time / conditional adverb"},
+      {id:"nsy",english:"forget",root:"ن س ي",form:"نَسِيتَ",formMeaning:"you forgot",type:"Root family + Quranic form"},
+      {id:"asa",english:"perhaps / it may be",root:"عَسَىٰ",form:"عَسَىٰ",formMeaning:"perhaps / it may be",type:"Quranic particle / verb"},
+      {id:"hdy",english:"guide",root:"ه د ي",form:"يَهْدِيَنِ",formMeaning:"He may guide me",type:"Root family + Quranic form"}]},
+
+    {id:18,title:"Lesson 18",subtitle:"Complete Al-Kahf 18:24 and begin the Musa story",units:[
+      {id:"aqraba",english:"nearer / closer",root:"ق ر ب",form:"أَقْرَبَ",formMeaning:"nearer / closer",type:"Root family + comparative form"},
+      {id:"hadha",english:"this",root:"هَٰذَا",form:"هَٰذَا",formMeaning:"this",type:"Demonstrative pronoun"},
+      {id:"blgh",english:"reach",root:"ب ل غ",form:"بَلَغَ",formMeaning:"he reached",type:"Root family + Quranic form"},
+      {id:"jma",english:"gather / junction",root:"ج م ع",form:"مَجْمَعَ",formMeaning:"meeting place / junction",type:"Root family + noun form"},
+      {id:"hut",english:"fish",root:"ح و ت",form:"حُوتَ",formMeaning:"fish",type:"Quranic noun"}]},
+
+    {id:19,title:"Lesson 19",subtitle:"Build towards Al-Kahf 18:61",units:[
+      {id:"lamma",english:"when / after",root:"لَمَّا",form:"فَلَمَّا",formMeaning:"then / but when",type:"Time adverb with conjunction"},
+      {id:"blagha_dual",english:"they both reached",root:"ب ل غ",form:"بَلَغَا",formMeaning:"the two of them reached",type:"Known root → dual verb form"},
+      {id:"majmaa",english:"junction / meeting place",root:"ج م ع",form:"مَجْمَعَ",formMeaning:"the junction",type:"Known root → noun form"},
+      {id:"huma_suffix",english:"their / them both",root:"ـهُمَا",form:"بَيْنِهِمَا",formMeaning:"between the two of them",type:"Dual attached pronoun"},
+      {id:"nasiya_dual",english:"they both forgot",root:"ن س ي",form:"نَسِيَا",formMeaning:"the two of them forgot",type:"Known root → dual verb form"}]},
+
+    {id:20,title:"Lesson 20",subtitle:"Unlock Al-Kahf 18:61",units:[
+      {id:"hutahuma",english:"their fish",root:"ح و ت",form:"حُوتَهُمَا",formMeaning:"their fish",type:"Noun + dual possessive pronoun"},
+      {id:"sbl",english:"way / path",root:"س ب ل",form:"سَبِيلَهُۥ",formMeaning:"its way / path",type:"Root family + attached pronoun"},
+      {id:"srb",english:"a tunnel / slipping path",root:"س ر ب",form:"سَرَبًا",formMeaning:"a tunnel / slipping away",type:"Root family + Quranic form"},
+      {id:"musa",english:"Musa / Moses",root:"مُوسَىٰ",form:"مُوسَىٰ",formMeaning:"Musa / Moses",type:"Proper noun"},
+      {id:"fatahu",english:"his young servant / companion",root:"ف ت ي",form:"فَتَىٰهُ",formMeaning:"his young servant / companion",type:"Known root → noun + pronoun"}]}
   ],
 
   ayat: [
@@ -100,6 +135,18 @@ window.APP_DATA = {
 
     /* These remain deliberately locked until every important learning unit
        needed for a full-ayah test has actually been taught. */
+    {id:"18:23",arabic:"وَلَا تَقُولَنَّ لِشَا۟ىْءٍ إِنِّى فَاعِلٌ ذَٰلِكَ غَدًا",
+     reference:"And never say of anything, “Indeed, I will do that tomorrow,”",
+     required:["wa","la","taqulanna","li","shay","inni","fail","dhalika","ghadan"]},
+
+    {id:"18:24",arabic:"إِلَّآ أَن يَشَآءَ ٱللَّهُ ۚ وَٱذْكُر رَّبَّكَ إِذَا نَسِيتَ وَقُلْ عَسَىٰٓ أَن يَهْدِيَنِ رَبِّى لِأَقْرَبَ مِنْ هَٰذَا رَشَدًا",
+     reference:"Except, “If Allah wills.” And remember your Lord when you forget and say, “Perhaps my Lord will guide me to what is nearer than this to right conduct.”",
+     required:["illa","an","shaa","wa","dhkr","rbb","idha","nsy","qwl_qul","asa","hdy","my_suffix_future","li","aqraba","min","hadha","rshd"]},
+
+    {id:"18:61",arabic:"فَلَمَّا بَلَغَا مَجْمَعَ بَيْنِهِمَا نَسِيَا حُوتَهُمَا فَٱتَّخَذَ سَبِيلَهُۥ فِى ٱلْبَحْرِ سَرَبًا",
+     reference:"But when they reached the junction between them, they forgot their fish, and it took its way into the sea, slipping away.",
+     required:["lamma","blagha_dual","majmaa","byn","huma_suffix","nasiya_dual","hutahuma","fa","akh","sbl","fi","bhr","srb"]},
+
     {id:"18:10",arabic:"إِذْ أَوَى ٱلْفِتْيَةُ إِلَى ٱلْكَهْفِ فَقَالُواْ رَبَّنَآ ءَاتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
      reference:"When the youths took refuge in the cave and said, “Our Lord, grant us mercy from Yourself and guide us rightly through our affair.”",
      required:["idh","awy","ftya","ila","khf","qwl","rbb","aty","min","rhm","lam","amr","rshd","ladunka_future","hayyi_future"]},
