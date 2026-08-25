@@ -74,23 +74,75 @@ function renderDashboard(){
   statKnown.textContent=`${state.mastered.size} / ${allUnits.length}`;
   statLessons.textContent=`${state.completed.size} / ${D.lessons.length}`;
   statAyat.textContent=unlockedAyat().length;
-  const nl=nextLesson();continueBtn.textContent=nl?`Start ${nl.title}`:"All lessons complete";continueBtn.disabled=!nl;
-  revisionBtn.disabled=state.mastered.size===0;ayatTestsBtn.disabled=unlockedAyat().length===0;
+
+  const nl=nextLesson();
+  continueBtn.textContent=nl?`Start ${nl.title}`:"All lessons complete";
+  continueBtn.disabled=!nl;
+  revisionBtn.disabled=state.mastered.size===0;
+  ayatTestsBtn.disabled=unlockedAyat().length===0;
+
   lessonList.innerHTML="";
-  D.lessons.forEach(l=>{
-    const done=state.completed.has(l.id),locked=l.id>1&&!state.completed.has(l.id-1);
-    const r=document.createElement("div");r.className=`lesson-row ${done?"complete":""}`;
-    r.innerHTML=`<div><strong>${l.title}</strong><div class="muted">${l.subtitle}</div></div><div class="lesson-actions"></div>`;
-    const actions=r.querySelector(".lesson-actions");
-    if(done){
-      const redo=document.createElement("button");redo.className="secondary";redo.textContent="Redo";redo.onclick=()=>startLesson(l);
-      const rev=document.createElement("button");rev.className="secondary";rev.textContent="Revise";rev.onclick=()=>startRevision(l.units,false);
-      actions.append(redo,rev);
-    }else{
-      const b=document.createElement("button");b.className="primary";b.textContent=locked?"Locked":"Start";b.disabled=locked;b.onclick=()=>startLesson(l);actions.appendChild(b);
-    }
-    lessonList.appendChild(r);
+
+  const pending=D.lessons.filter(l=>!state.completed.has(l.id));
+  const completed=D.lessons.filter(l=>state.completed.has(l.id));
+
+  const pendingHeading=document.createElement("div");
+  pendingHeading.className="lesson-section-heading";
+  pendingHeading.innerHTML=`<strong>Pending lessons</strong><span>${pending.length}</span>`;
+  lessonList.appendChild(pendingHeading);
+
+  pending.forEach(l=>{
+    const locked=l.id>1&&!state.completed.has(l.id-1);
+    const row=document.createElement("div");
+    row.className="lesson-row";
+    row.innerHTML=`<div><strong>${l.title}</strong><div class="muted">${l.subtitle}</div></div><div class="lesson-actions"></div>`;
+
+    const actions=row.querySelector(".lesson-actions");
+    const button=document.createElement("button");
+    button.className=locked?"secondary":"primary";
+    button.textContent=locked?"Locked":"Start";
+    button.disabled=locked;
+    button.onclick=()=>startLesson(l);
+    actions.appendChild(button);
+
+    lessonList.appendChild(row);
   });
+
+  if(completed.length){
+    const details=document.createElement("details");
+    details.className="completed-lessons";
+
+    const summary=document.createElement("summary");
+    summary.innerHTML=`<span>Completed lessons</span><span>${completed.length}</span>`;
+    details.appendChild(summary);
+
+    const completedList=document.createElement("div");
+    completedList.className="completed-lessons-list";
+
+    completed.forEach(l=>{
+      const row=document.createElement("div");
+      row.className="lesson-row complete";
+      row.innerHTML=`<div><strong>${l.title}</strong><div class="muted">${l.subtitle}</div></div><div class="lesson-actions"></div>`;
+
+      const actions=row.querySelector(".lesson-actions");
+
+      const redo=document.createElement("button");
+      redo.className="secondary";
+      redo.textContent="Redo";
+      redo.onclick=()=>startLesson(l);
+
+      const revise=document.createElement("button");
+      revise.className="secondary";
+      revise.textContent="Revise";
+      revise.onclick=()=>startRevision(l.units,false);
+
+      actions.append(redo,revise);
+      completedList.appendChild(row);
+    });
+
+    details.appendChild(completedList);
+    lessonList.appendChild(details);
+  }
 }
 
 function startLesson(l){currentLesson=l;cardIndex=0;lessonTitle.textContent=l.title;lessonSubtitle.textContent=l.subtitle;renderCard();show("lesson")}
