@@ -56,7 +56,22 @@ const GRAMMAR_NOTES={
   fatahu:"singular masculine noun + “his”",
   bny:"masculine plural noun · sons/children",
   klm:"feminine plural noun",
-  fi:"preposition + singular masculine pronoun in فِيهِ"
+  fi:"preposition + singular masculine pronoun in فِيهِ",
+  amn:"3+ people · past tense",qam:"3+ people · past tense",dua:"first-person plural · we",
+  bd:"3+ people · present tense",fawa:"command to a group",ayqz:"masculine plural",
+  klb:"singular noun + their",dhr:"dual · exactly two forelegs",itl:"you = one male",
+  wly_turn:"you = one male",bth:"We = first-person plural",labth:"you = group",
+  wrq:"your = group",ltf:"command / instruction to one male",shr:"emphatic form",
+  zhr:"they = 3+ people",rjm:"they = 3+ people; you = group",awd:"they = 3+ people; you = group",
+  flh:"you = group",athr:"We = first-person plural",bnyn:"command to a group",
+  mra:"you = one male",stft:"you = one male",tlw:"command to one male",
+  sbr_nafs:"command to one male",ayn:"dual · exactly two eyes",ryd:"you = one male",
+  ghfl:"We = first-person plural",fal:"third-person singular instruction",kfr:"third-person singular instruction",
+  ghwth:"they = 3+ people",aml:"they = 3+ people · past tense",jry:"feminine singular verb agreeing with rivers",
+  rjl:"dual · exactly two men",hff:"We = first-person plural; them = exactly two",
+  klta:"dual · exactly two",fjr:"We = first-person plural",hwr:"he = one male; him = one male",
+  dkl:"one male · past tense",azn:"I = first-person singular",rdd:"I = first-person singular passive"
+
 };
 
 function isNonRootUnit(u){

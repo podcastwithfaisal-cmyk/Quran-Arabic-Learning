@@ -50,3 +50,21 @@ Replace:
 - README.md
 
 `data.js` is unchanged in this update.
+
+
+## Lessons 21–50
+
+Adds 30 new lessons (150 learning units), bringing the curriculum to:
+- 50 lessons
+- 250 learning units
+
+The new block continues through Surah Al-Kahf, especially:
+- the People of the Cave narrative
+- the cave awakening and city episode
+- Allah's promise and the number of the sleepers
+- recitation and companionship with believers
+- truth, belief and accountability
+- gardens and reward
+- the parable of the two gardens
+
+The word-first card model is retained throughout.
