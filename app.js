@@ -95,7 +95,7 @@ function quizMeanings(){
 let session=null,state={mastered:new Set(),completed:new Set(),wordStats:{},ayatAttempts:[]};
 let authMode="signin",currentLesson=null,cardIndex=0,quizQueue=[],quizIndex=0,quizHistory=[],lessonRevision=false,currentAyah=null;
 
-const screens={auth:authScreen,dashboard:dashboardScreen,lesson:lessonScreen,revision:revisionScreen,ayatList:ayatListScreen,ayat:ayatScreen};
+const screens={auth:authScreen,dashboard:dashboardScreen,lesson:lessonScreen,revision:revisionScreen,lessonComplete:lessonCompleteScreen,ayatList:ayatListScreen,ayat:ayatScreen};
 function show(name){Object.values(screens).forEach(x=>x.classList.remove("active"));screens[name].classList.add("active");window.scrollTo({top:0})}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
 function unlockedAyat(){return D.ayat.filter(a=>a.required.every(id=>state.mastered.has(id)))}
@@ -132,6 +132,101 @@ async function loadProgress(){
   (words||[]).forEach(x=>{state.wordStats[x.unit_id]=x;if(x.mastered)state.mastered.add(x.unit_id)});
   state.ayatAttempts=ayat||[];
   renderUser();
+}
+
+
+function masteredUnits(){
+  return [...state.mastered].map(id=>unitMap[id]).filter(Boolean);
+}
+
+function countsForUnitIds(ids){
+  const units=ids.map(id=>unitMap[id]).filter(Boolean);
+
+  const forms=new Set();
+  const roots=new Set();
+
+  units.forEach(u=>{
+    if((u.type||"").toLowerCase().includes("grammar pattern")) return;
+
+    if(u.form && u.form.trim()){
+      forms.add(u.form.trim());
+    }
+
+    if(!isNonRootUnit(u) && u.root && u.root.trim()){
+      roots.add(u.root.trim());
+    }
+  });
+
+  return {
+    forms:forms.size,
+    roots:roots.size,
+    rootSet:roots
+  };
+}
+
+function learnerTotals(){
+  return countsForUnitIds([...state.mastered]);
+}
+
+function lessonProgressGain(lesson,beforeMasteredIds){
+  const before=countsForUnitIds(beforeMasteredIds);
+  const afterIds=[...new Set([...beforeMasteredIds,...lesson.units.map(u=>u.id)])];
+  const after=countsForUnitIds(afterIds);
+
+  const lessonForms=new Set();
+  lesson.units.forEach(u=>{
+    if(!(u.type||"").toLowerCase().includes("grammar pattern") && u.form){
+      lessonForms.add(u.form.trim());
+    }
+  });
+
+  return {
+    formsAdded:lessonForms.size,
+    newRoots:Math.max(0,after.roots-before.roots)
+  };
+}
+
+function newlyUnlockedAyat(beforeMasteredIds){
+  const before=new Set(beforeMasteredIds);
+  const beforeUnlocked=new Set(
+    D.ayat.filter(a=>a.required.every(id=>before.has(id))).map(a=>a.id)
+  );
+  return unlockedAyat().filter(a=>!beforeUnlocked.has(a.id));
+}
+
+function showLessonComplete(lesson,beforeMasteredIds){
+  const totals=learnerTotals();
+  const gain=lessonProgressGain(lesson,beforeMasteredIds);
+  const newAyat=newlyUnlockedAyat(beforeMasteredIds);
+
+  completeLessonTitle.textContent=`${lesson.title} complete ✓`;
+  completeFormsTotal.textContent=totals.forms;
+  completeRootsTotal.textContent=totals.roots;
+  completeLessonGain.textContent=`+${gain.formsAdded} forms · +${gain.newRoots} new root ${gain.newRoots===1?"family":"families"}`;
+
+  completionAyatBtn.classList.add("hidden");
+  newAyahNotice.classList.add("hidden");
+  completionAyatBtn.onclick=null;
+
+  if(newAyat.length){
+    const ayah=newAyat[0];
+    newAyahNotice.classList.remove("hidden");
+    newAyahNotice.innerHTML=`<strong>New ayah unlocked:</strong> Al-Kahf ${ayah.id}`;
+    completionAyatBtn.classList.remove("hidden");
+    completionAyatBtn.textContent=newAyat.length>1
+      ? `Try an Ayat Test (${newAyat.length} unlocked)`
+      : "Try Ayat Test";
+    completionAyatBtn.onclick=()=>{
+      if(newAyat.length===1){
+        startAyat(ayah);
+      }else{
+        renderAyatList();
+        show("ayatList");
+      }
+    };
+  }
+
+  show("lessonComplete");
 }
 
 async function saveLessonComplete(lesson){
@@ -319,8 +414,20 @@ async function nextRevision(){
   if(missed.length){
     quizQueue=shuffle(missed);quizIndex=0;quizHistory=[];renderQuiz();return;
   }
-  if(lessonRevision&&currentLesson){await saveLessonComplete(currentLesson)}
-  await loadProgress();renderDashboard();show("dashboard");
+  if(lessonRevision&&currentLesson){
+    const beforeMasteredIds=[...state.mastered];
+    const completedLesson=currentLesson;
+
+    await saveLessonComplete(completedLesson);
+    await loadProgress();
+    renderDashboard();
+    showLessonComplete(completedLesson,beforeMasteredIds);
+    return;
+  }
+
+  await loadProgress();
+  renderDashboard();
+  show("dashboard");
 }
 
 function getAyatProgress(ayahId){
@@ -615,5 +722,7 @@ revisionExitBtn.onclick=()=>{
   renderDashboard();
   show("dashboard");
 };
+
+completionDashboardBtn.onclick=()=>{renderDashboard();show("dashboard");};
 
 init();

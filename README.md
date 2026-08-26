@@ -68,3 +68,15 @@ The new block continues through Surah Al-Kahf, especially:
 - the parable of the two gardens
 
 The word-first card model is retained throughout.
+
+
+## Lesson completion progress summary
+
+After a completed lesson the learner now sees:
+- cumulative Quranic words/forms learnt
+- cumulative unique lexical root families encountered
+- forms added in the lesson
+- new root families introduced in the lesson
+- a prompt to try an Ayat Test if the lesson has just unlocked one
+
+Particles, pronouns and grammar-only units are not incorrectly counted as lexical root families.

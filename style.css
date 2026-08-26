@@ -199,3 +199,65 @@
     padding:11px 12px;
   }
 }
+
+
+.lesson-complete-card{
+  text-align:left;
+}
+.completion-stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin:22px 0 14px;
+}
+.completion-stats article{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  background:var(--surface);
+}
+.completion-stats span{
+  display:block;
+  color:var(--muted);
+  font-size:.82rem;
+  margin-bottom:7px;
+}
+.completion-stats strong{
+  font-size:1.8rem;
+}
+.lesson-gain-card{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  padding:14px 16px;
+  border-radius:14px;
+  background:var(--soft);
+  margin-bottom:14px;
+}
+.lesson-gain-card span{
+  color:var(--muted);
+}
+.new-ayah-notice{
+  margin-top:14px;
+  padding:15px 16px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--success);
+}
+@media(max-width:430px){
+  .completion-stats{
+    grid-template-columns:1fr 1fr;
+  }
+  .completion-stats article{
+    padding:14px;
+  }
+  .completion-stats strong{
+    font-size:1.45rem;
+  }
+  .lesson-gain-card{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:4px;
+  }
+}
