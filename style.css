@@ -42,3 +42,160 @@
   gap:10px;
   margin-top:8px;
 }
+
+
+/* Word-first lesson design */
+.root-meaning-box{
+  margin-top:20px;
+  padding:12px 16px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(255,255,255,.55);
+  text-align:center;
+  min-width:min(340px,90%);
+}
+.root-meaning-label{
+  display:block;
+  color:var(--muted);
+  font-size:.74rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:5px;
+}
+.grammar-info{
+  color:var(--accent-dark);
+  font-size:.92rem;
+  font-weight:800;
+  margin:10px 0 0;
+  text-align:center;
+  min-height:1.2em;
+}
+.arabic-primary{
+  font-size:clamp(3rem,11vw,5.4rem);
+  margin-top:6px;
+}
+.root-divider{
+  width:min(280px,75%);
+  border-top:1px solid var(--border);
+  margin:20px 0 14px;
+}
+.root-secondary{
+  font-size:clamp(2.2rem,8vw,3.7rem);
+}
+.lesson-heading-actions{
+  display:flex;
+  align-items:flex-end;
+  flex-direction:column;
+  gap:6px;
+}
+.compact-button{
+  padding:8px 11px;
+  font-size:.78rem;
+}
+
+/* Small-phone optimisation */
+@media (max-width:430px){
+  .app-shell{
+    width:calc(100% - 16px);
+    padding-top:10px;
+    padding-bottom:80px;
+  }
+  .app-header{
+    margin-bottom:12px;
+    align-items:center;
+  }
+  .app-header h1{
+    font-size:1.55rem;
+    margin-bottom:2px;
+  }
+  .app-header .eyebrow{
+    font-size:.65rem;
+    margin-bottom:3px;
+  }
+  .app-header .muted{
+    font-size:.76rem;
+    margin-bottom:0;
+  }
+  .user-area{
+    font-size:.72rem;
+  }
+  .user-area .secondary{
+    padding:7px 9px;
+    font-size:.72rem;
+  }
+  .section-heading{
+    margin-bottom:10px;
+    align-items:center;
+  }
+  .section-heading h2{
+    font-size:1.2rem;
+    margin-bottom:3px;
+  }
+  .section-heading .eyebrow{
+    margin-bottom:3px;
+  }
+  .lesson-heading-actions{
+    align-items:flex-end;
+  }
+  .flip-card{
+    height:330px;
+  }
+  .card-face{
+    padding:16px;
+  }
+  .big-meaning{
+    font-size:2rem;
+  }
+  .arabic-primary{
+    font-size:3rem;
+  }
+  .root-secondary{
+    font-size:2.35rem;
+  }
+  .root-meaning-box{
+    margin-top:13px;
+    padding:9px 12px;
+  }
+  .grammar-info{
+    margin-top:6px;
+    font-size:.82rem;
+  }
+  .tap-hint{
+    margin-top:14px;
+  }
+  .quiz-card{
+    padding:18px 14px;
+  }
+  .quiz-arabic{
+    font-size:3rem;
+  }
+  .answer-grid{
+    gap:7px;
+    margin-top:10px;
+  }
+  .answer-option{
+    padding:11px 13px;
+  }
+  .feedback{
+    margin-top:8px;
+    min-height:18px;
+  }
+  .navigation-row{
+    position:sticky;
+    bottom:8px;
+    z-index:50;
+    background:rgba(246,243,234,.96);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:8px;
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  .navigation-row button{
+    width:100%;
+    padding:11px 12px;
+  }
+}

@@ -1,6 +1,82 @@
 const C=window.APP_CONFIG,D=window.APP_DATA;
 const sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_PUBLISHABLE_KEY);
 const allUnits=D.lessons.flatMap(l=>l.units),unitMap=Object.fromEntries(allUnits.map(u=>[u.id,u]));
+const ROOT_MEANING_OVERRIDES={
+  qwl_qala:"say / speak",qwl_qul:"say / speak",kwn_kana:"be / exist",
+  satajiduni_future:"find",wjd:"find",sa_future:"future marker",ni_suffix:"me",
+  my_suffix_future:"my",midada:"extend / supply",lanafida:"run out / be exhausted",
+  walaw:"if / even if",taqulanna:"say / speak",inni:"indeed / certainly",
+  blagha_dual:"reach",nasiya_dual:"forget",hutahuma:"fish",
+  fatahu:"youth / young person",ma:"what / that which",
+  na_suffix:"our / us",hu_suffix:"him / his / it",huma_suffix:"their / them both",
+  ka_suffix:"your / you",li:"for / to",lam:"for / to",bi:"with / by",
+  wa:"and",fa:"then / so",an:"that / to",in:"if",law:"if / even if",
+  illa:"except / unless",idha:"when",idh:"when",dhalika:"that",hadha:"this"
+};
+
+const GRAMMAR_NOTES={
+  qwl:"3+ males / masculine or mixed group",
+  akh:"singular masculine · past tense",
+  ndhr:"singular masculine · present/subjunctive form",
+  wld:"singular noun",
+  alladhina:"plural masculine · 3 or more",
+  hu:"singular masculine attached pronoun",
+  mkth:"masculine plural · 3 or more",
+  rbb:"singular noun",
+  kwn:"singular masculine · past tense",
+  jal:"singular masculine · past tense",
+  aty:"command to one male + “us” object",
+  shaa:"singular masculine · past tense",
+  sbr:"singular masculine description",
+  qwl_qala:"one male · he said",
+  qwl_qul:"command to one male · say!",
+  kwn_kana:"one male / masculine singular · was",
+  na_suffix:"first-person plural · our / us",
+  hu_suffix:"third-person masculine singular · him / his / it",
+  awy:"verb form is singular masculine; plural subject follows in the ayah",
+  ftya:"masculine plural noun · youths",
+  amr:"singular noun",
+  satajiduni_future:"you = one male; future tense; “me” attached",
+  asi_future:"I = first-person singular",
+  sa_future:"future prefix",
+  ni_suffix:"first-person singular object · me",
+  my_suffix_future:"first-person singular possessive · my",
+  jia:"first-person plural · We came/brought",
+  taqulanna:"you = one male · emphatic present form",
+  inni:"first-person singular · indeed I",
+  fail:"singular masculine active participle",
+  nsy:"you = one male · past tense",
+  hdy:"He = singular masculine; “me” attached",
+  blgh:"singular masculine · past tense",
+  blagha_dual:"dual · exactly two people/things",
+  huma_suffix:"dual pronoun · exactly two",
+  nasiya_dual:"dual · exactly two",
+  hutahuma:"their = exactly two",
+  musa:"proper name",
+  fatahu:"singular masculine noun + “his”",
+  bny:"masculine plural noun · sons/children",
+  klm:"feminine plural noun",
+  fi:"preposition + singular masculine pronoun in فِيهِ"
+};
+
+function isNonRootUnit(u){
+  return /Particle|Pronoun|Preposition|Conjunction|Grammar pattern|Time particle|Demonstrative|Proper noun/i.test(u.type||"");
+}
+function actualMeaning(u){
+  return u.wordMeaning || u.formMeaning || u.english;
+}
+function rootMeaning(u){
+  if(ROOT_MEANING_OVERRIDES[u.id]) return ROOT_MEANING_OVERRIDES[u.id];
+  if(isNonRootUnit(u)) return `No separate lexical root — ${u.english}`;
+  return u.rootMeaning || u.english;
+}
+function grammarNote(u){
+  return GRAMMAR_NOTES[u.id] || "";
+}
+function quizMeanings(){
+  return [...new Set(allUnits.map(actualMeaning))];
+}
+
 let session=null,state={mastered:new Set(),completed:new Set(),wordStats:{},ayatAttempts:[]};
 let authMode="signin",currentLesson=null,cardIndex=0,quizQueue=[],quizIndex=0,quizHistory=[],lessonRevision=false,currentAyah=null;
 
@@ -145,34 +221,24 @@ function renderDashboard(){
   }
 }
 
-function addDashboardExit(){
-  const existing=document.getElementById("lessonDashboardExit");
-  if(existing) existing.remove();
-
-  const activeView=[lessonView,revisionView].find(v=>v&&!v.classList.contains("hidden"));
-  if(!activeView) return;
-
-  const exit=document.createElement("button");
-  exit.id="lessonDashboardExit";
-  exit.className="secondary";
-  exit.textContent="← Back to Dashboard";
-  exit.style.marginBottom="12px";
-  exit.onclick=()=>{
-    showView(dashboardView);
-    renderDashboard();
-  };
-
-  const heading=activeView.querySelector(".section-heading");
-  if(heading) heading.insertAdjacentElement("afterend",exit);
-  else activeView.prepend(exit);
-}
-
 function startLesson(l){currentLesson=l;cardIndex=0;lessonTitle.textContent=l.title;lessonSubtitle.textContent=l.subtitle;renderCard();show("lesson")}
 function renderCard(){
   const u=currentLesson.units[cardIndex];
-  englishMeaning.textContent=u.english;arabicRoot.textContent=u.root;arabicForm.textContent=u.form;
-  formMeaning.textContent=u.formMeaning;unitType.textContent=u.type;cardCounter.textContent=`${cardIndex+1} of ${currentLesson.units.length}`;
-  backCardBtn.disabled=cardIndex===0;nextCardBtn.textContent=cardIndex===currentLesson.units.length-1?"Start Revision":"Next";flipCard.classList.remove("flipped");
+
+  englishMeaning.textContent=actualMeaning(u);
+  rootMeaningFront.textContent=rootMeaning(u);
+  grammarInfoFront.textContent=grammarNote(u);
+
+  arabicForm.textContent=u.form;
+  arabicRoot.textContent=u.root;
+  rootMeaningBack.textContent=`Root meaning: ${rootMeaning(u)}`;
+  grammarInfoBack.textContent=grammarNote(u);
+  unitType.textContent=u.type;
+
+  cardCounter.textContent=`${cardIndex+1} of ${currentLesson.units.length}`;
+  backCardBtn.disabled=cardIndex===0;
+  nextCardBtn.textContent=cardIndex===currentLesson.units.length-1?"Start Revision":"Next";
+  flipCard.classList.remove("flipped");
 }
 
 function startRevision(items,isLesson=true){
@@ -180,27 +246,53 @@ function startRevision(items,isLesson=true){
 }
 function renderQuiz(){
   const u=quizQueue[quizIndex],prev=quizHistory[quizIndex];
-  quizArabic.textContent=u.form;quizSub.textContent=u.root===u.form?u.type:`Root: ${u.root}`;
-  quizCounter.textContent=`${quizIndex+1} of ${quizQueue.length}`;quizFeedback.textContent="";
+  const correctMeaning=actualMeaning(u);
+
+  quizArabic.textContent=u.form;
+  const grammar=grammarNote(u);
+  quizSub.textContent=grammar
+    ? `${grammar} · Root: ${u.root} (${rootMeaning(u)})`
+    : `Root: ${u.root} · ${rootMeaning(u)}`;
+
+  quizCounter.textContent=`${quizIndex+1} of ${quizQueue.length}`;
+  quizFeedback.textContent="";
   answerOptions.innerHTML="";
-  const options=shuffle([u.english,...shuffle(allUnits.filter(x=>x.id!==u.id).map(x=>x.english)).slice(0,3)]);
+
+  const pool=quizMeanings().filter(x=>x!==correctMeaning);
+  const options=shuffle([correctMeaning,...shuffle(pool).slice(0,3)]);
+
   options.forEach(o=>{
-    const b=document.createElement("button");b.className="answer-option";b.textContent=o;
-    if(prev){b.disabled=true;if(o===u.english)b.classList.add("correct");if(o===prev.answer&&o!==u.english)b.classList.add("wrong")}
-    else b.onclick=()=>answerRevision(b,o,u);
+    const b=document.createElement("button");
+    b.className="answer-option";
+    b.textContent=o;
+
+    if(prev){
+      b.disabled=true;
+      if(o===correctMeaning)b.classList.add("correct");
+      if(o===prev.answer&&o!==correctMeaning)b.classList.add("wrong");
+    }else{
+      b.onclick=()=>answerRevision(b,o,u);
+    }
     answerOptions.appendChild(b);
   });
-  if(prev)quizFeedback.textContent=prev.correct?"Correct.":`Incorrect. Correct answer: ${u.english}`;
+
+  if(prev){
+    quizFeedback.textContent=prev.correct
+      ?"Correct."
+      :`Incorrect. Correct answer: ${correctMeaning}`;
+  }
+
   revisionBackBtn.disabled=quizIndex===0;
   revisionNextBtn.disabled=!prev;
   revisionNextBtn.textContent=quizIndex===quizQueue.length-1?"Finish / retry missed":"Next";
 }
 
 async function answerRevision(btn,answer,u){
-  const correct=answer===u.english;
+  const correctMeaning=actualMeaning(u);
+  const correct=answer===correctMeaning;
   await recordWord(u,correct);
   quizHistory[quizIndex]={answer,correct};
-  document.querySelectorAll(".answer-option").forEach(b=>{b.disabled=true;if(b.textContent===u.english)b.classList.add("correct")});
+  document.querySelectorAll(".answer-option").forEach(b=>{b.disabled=true;if(b.textContent===correctMeaning)b.classList.add("correct")});
   if(!correct)btn.classList.add("wrong");
   quizFeedback.textContent=correct?"Correct.":`Incorrect. Correct answer: ${u.english}`;
   revisionNextBtn.disabled=false;
@@ -497,6 +589,16 @@ checkAyatBtn.onclick=async()=>{
     <p><strong>Reference meaning:</strong> ${currentAyah.reference}</p>
     <p class="muted">Your attempt is saved. The app remembers your best score, and a later lower score will not remove a previous pass.</p>
   `;
+};
+
+
+lessonExitBtn.onclick=()=>{
+  renderDashboard();
+  show("dashboard");
+};
+revisionExitBtn.onclick=()=>{
+  renderDashboard();
+  show("dashboard");
 };
 
 init();

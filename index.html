@@ -75,21 +75,37 @@
           <h2 id="lessonTitle"></h2>
           <p id="lessonSubtitle" class="muted"></p>
         </div>
-        <p id="cardCounter" class="muted"></p>
+        <div class="lesson-heading-actions">
+          <p id="cardCounter" class="muted"></p>
+          <button id="lessonExitBtn" class="secondary compact-button">← Dashboard</button>
+        </div>
       </div>
 
       <button id="flipCard" class="flip-card">
         <div class="flip-card-inner">
           <div class="card-face card-front">
-            <p class="small-label">Meaning</p>
+            <p class="small-label">Quranic word meaning</p>
             <div id="englishMeaning" class="big-meaning"></div>
-            <p class="tap-hint">Tap to reveal Arabic</p>
+            <p id="grammarInfoFront" class="grammar-info"></p>
+
+            <div class="root-meaning-box">
+              <span class="root-meaning-label">Root meaning</span>
+              <strong id="rootMeaningFront"></strong>
+            </div>
+
+            <p class="tap-hint">Tap to reveal the Arabic word</p>
           </div>
+
           <div class="card-face card-back">
-            <p class="small-label">Root / learning unit</p>
-            <div id="arabicRoot" class="arabic-root" dir="rtl"></div>
-            <div id="arabicForm" class="arabic-form" dir="rtl"></div>
-            <p id="formMeaning" class="form-meaning"></p>
+            <p class="small-label">Quranic word</p>
+            <div id="arabicForm" class="arabic-form arabic-primary" dir="rtl"></div>
+            <p id="grammarInfoBack" class="grammar-info"></p>
+
+            <div class="root-divider"></div>
+
+            <p class="small-label">Root letters / learning unit</p>
+            <div id="arabicRoot" class="arabic-root root-secondary" dir="rtl"></div>
+            <p id="rootMeaningBack" class="form-meaning"></p>
             <p id="unitType" class="unit-type"></p>
           </div>
         </div>

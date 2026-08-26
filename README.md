@@ -1,23 +1,52 @@
-# Quran Arabic Learning — Lessons 1–20
+# Quran Arabic Learning — Word-first Lessons 1–20
 
-This build extends the curriculum to 20 lessons / 100 learning units.
+This build changes the teaching model across all 20 lessons.
 
-New lessons:
-- Lesson 16 unlocks Al-Kahf 18:23
-- Lessons 17–18 complete Al-Kahf 18:24
-- Lessons 18–20 move into the Musa story
-- Lesson 20 unlocks Al-Kahf 18:61
+## New lesson-card model
 
-The build retains:
-- Supabase multi-user accounts and saved progress
-- pending lessons shown before completed lessons
-- collapsed completed lesson section
-- Redo / Revise
-- retry of missed revision questions
+Front:
+- English meaning of the actual Quranic word/form
+- grammatical information where useful (for example singular, dual, 3+ plural)
+- English meaning of the underlying root/family
+
+Back:
+- the Arabic word exactly as taught from the Quran
+- grammatical information
+- root letters / learning unit
+- root meaning
+
+Revision now tests the actual Quranic word meaning rather than only the broad root meaning.
+
+Examples:
+- قَالُواْ = “they said” — 3+ males / masculine or mixed group
+  Root ق و ل = say / speak
+- بَلَغَا = “they both reached” — exactly two
+  Root ب ل غ = reach
+- سَتَجِدُنِي = “you will find me” — one male addressed, future tense, “me” attached
+  Root و ج د = find
+
+## Retained features
+
+- 20 lessons / 100 learning units
+- Supabase multi-user progress
+- pending lessons first
+- completed lesson Redo / Revise
+- retry missed revision questions
 - revision Back navigation
-- sequential lesson locking
-- harakat on Quranic forms
+- improved Ayat concept grading
+- remembered Ayat passes / best scores
+- Review Related Lessons
+- Dashboard exit from lessons/revision
+- small-phone/iPhone layout improvements
 
-Upload:
-Keep your existing working config.js in GitHub.
-Replace index.html, style.css, data.js, app.js and README.md.
+## Upload
+
+Keep your existing live `config.js` because it contains your working Supabase publishable key.
+
+Replace:
+- index.html
+- style.css
+- app.js
+- README.md
+
+`data.js` is unchanged in this update.
