@@ -195,6 +195,13 @@ function newlyUnlockedAyat(beforeMasteredIds){
 }
 
 function showLessonComplete(lesson,beforeMasteredIds){
+  const dashboardButton=document.getElementById("completionDashboardBtn");
+  if(dashboardButton){
+    dashboardButton.onclick=()=>{
+      show("dashboard");
+    };
+  }
+
   const totals=learnerTotals();
   const gain=lessonProgressGain(lesson,beforeMasteredIds);
   const newAyat=newlyUnlockedAyat(beforeMasteredIds);
@@ -204,20 +211,19 @@ function showLessonComplete(lesson,beforeMasteredIds){
   completeRootsTotal.textContent=totals.roots;
   completeLessonGain.textContent=`+${gain.formsAdded} forms · +${gain.newRoots} new root ${gain.newRoots===1?"family":"families"}`;
 
-  const completionAyatButton=document.getElementById("completionAyatBtn");
-  completionAyatButton.classList.add("hidden");
+  completionAyatBtn.classList.add("hidden");
   newAyahNotice.classList.add("hidden");
-  completionAyatButton.onclick=null;
+  completionAyatBtn.onclick=null;
 
   if(newAyat.length){
     const ayah=newAyat[0];
     newAyahNotice.classList.remove("hidden");
     newAyahNotice.innerHTML=`<strong>New ayah unlocked:</strong> Al-Kahf ${ayah.id}`;
-    completionAyatButton.classList.remove("hidden");
-    completionAyatButton.textContent=newAyat.length>1
+    completionAyatBtn.classList.remove("hidden");
+    completionAyatBtn.textContent=newAyat.length>1
       ? `Try an Ayat Test (${newAyat.length} unlocked)`
       : "Try Ayat Test";
-    completionAyatButton.onclick=()=>{
+    completionAyatBtn.onclick=()=>{
       if(newAyat.length===1){
         startAyat(ayah);
       }else{
@@ -724,12 +730,6 @@ revisionExitBtn.onclick=()=>{
   show("dashboard");
 };
 
-const completionDashboardButton=document.getElementById("completionDashboardBtn");
-if(completionDashboardButton){
-  completionDashboardButton.addEventListener("click",()=>{
-    renderDashboard();
-    show("dashboard");
-  });
-}
+
 
 init();
