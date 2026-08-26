@@ -77,7 +77,7 @@
         </div>
         <div class="lesson-heading-actions">
           <p id="cardCounter" class="muted"></p>
-          <button id="lessonExitBtn" class="secondary compact-button">← Dashboard</button>
+          <button id="lessonExitBtn" class="secondary compact-button" type="button">← Dashboard</button>
         </div>
       </div>
 
@@ -135,8 +135,8 @@
       <p id="quizFeedback" class="feedback"></p>
 
       <div class="navigation-row">
-        <button id="revisionBackBtn" class="secondary">Back</button>
-        <button id="revisionNextBtn" class="primary" disabled>Next</button>
+        <button id="revisionBackBtn" class="secondary" type="button">Back</button>
+        <button id="revisionNextBtn" class="primary" type="button" disabled>Next</button>
       </div>
     </section>
 
@@ -165,7 +165,7 @@
         <div id="newAyahNotice" class="new-ayah-notice hidden"></div>
 
         <div class="actions">
-          <button id="completionDashboardBtn" class="primary">Back to Dashboard</button>
+          <button id="completionDashboardBtn" class="primary" type="button" onclick="returnToDashboard()">Back to Dashboard</button>
           <button id="completionAyatBtn" class="secondary hidden">Try Ayat Test</button>
         </div>
       </div>
@@ -174,7 +174,7 @@
     <section id="ayatListScreen" class="screen">
       <div class="section-heading">
         <div><p class="eyebrow">Ayat Tests</p><h2>Unlocked ayat</h2></div>
-        <button id="backDashboard" class="secondary">Dashboard</button>
+        <button id="backDashboard" class="secondary" type="button">Dashboard</button>
       </div>
       <div id="ayatList" class="ayat-list"></div>
     </section>

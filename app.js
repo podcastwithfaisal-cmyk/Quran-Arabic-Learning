@@ -97,6 +97,15 @@ let authMode="signin",currentLesson=null,cardIndex=0,quizQueue=[],quizIndex=0,qu
 
 const screens={auth:authScreen,dashboard:dashboardScreen,lesson:lessonScreen,revision:revisionScreen,lessonComplete:lessonCompleteScreen,ayatList:ayatListScreen,ayat:ayatScreen};
 function show(name){Object.values(screens).forEach(x=>x.classList.remove("active"));screens[name].classList.add("active");window.scrollTo({top:0})}
+
+window.returnToDashboard=function(){
+  const dashboard=document.getElementById("dashboardScreen");
+  document.querySelectorAll(".screen").forEach(screen=>screen.classList.remove("active"));
+  if(dashboard){
+    dashboard.classList.add("active");
+    window.scrollTo({top:0,behavior:"auto"});
+  }
+};
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
 function unlockedAyat(){return D.ayat.filter(a=>a.required.every(id=>state.mastered.has(id)))}
 function nextLesson(){return D.lessons.find(l=>!state.completed.has(l.id))||null}
@@ -195,13 +204,6 @@ function newlyUnlockedAyat(beforeMasteredIds){
 }
 
 function showLessonComplete(lesson,beforeMasteredIds){
-  const dashboardButton=document.getElementById("completionDashboardBtn");
-  if(dashboardButton){
-    dashboardButton.onclick=()=>{
-      show("dashboard");
-    };
-  }
-
   const totals=learnerTotals();
   const gain=lessonProgressGain(lesson,beforeMasteredIds);
   const newAyat=newlyUnlockedAyat(beforeMasteredIds);
@@ -723,11 +725,11 @@ checkAyatBtn.onclick=async()=>{
 
 lessonExitBtn.onclick=()=>{
   renderDashboard();
-  show("dashboard");
+  window.returnToDashboard();
 };
 revisionExitBtn.onclick=()=>{
   renderDashboard();
-  show("dashboard");
+  window.returnToDashboard();
 };
 
 
